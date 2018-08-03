@@ -1,0 +1,58 @@
+
+URL:1.https://blog.csdn.net/honjane/article/details/41701687
+
+计算listView的总高度只需要自定义一个mylistView继承listView，重写onMeasure（...）方法就搞定了。
+
+ @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+ 
+        int expandSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
+ 
+        super.onMeasure(widthMeasureSpec, expandSpec);
+ 
+    }
+
+但是当listView设置了dividerHeight属性之后上面的方法就失效了，因为上面的方法 没有加上每个Item之间的间隔dividerHeight。
+
+
+
+我们怎么办呢，通过在网上的搜索，发现有其他网友分享，可以先加载出listView的数据，然后通过for循环计算每个item的高度，再加和
+
+得到我们想要的listView的总高度。
+
+代码如下：
+
+public static void setListViewHeightBasedOnChildren(ListView listView) {
+        //获取ListView对应的Adapter
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+ 
+        int totalHeight = 0;
+        for (int i = 0, len = listAdapter.getCount(); i < len; i++) { //listAdapter.getCount()返回数据项的数目
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(0, 0); //计算子项View 的宽高
+            totalHeight += listItem.getMeasuredHeight()+listView.getDividerHeight()/2; //统计所有子项+dividerheight的总高度
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        //listView.getDividerHeight()获取子项间分隔符占用的高度
+        //params.height最后得到整个ListView完整显示需要的高度
+        listView.setLayoutParams(params);
+    }
+
+注意：1、setListViewHeiBasedOnChildren(listView),在数据添加之后使用
+
+if (addressResult != null && addressResult.size() >= 0) {
+                        addressadapter = new AddressItemAdapter(getApplicationContext(), addressResult);
+                        addressadapter.addressListener(AddressActivity.this);
+                        addressListView.setAdapter(addressadapter);
+                        setListViewHeightBasedOnChildren(addressListView);
+             }
+        
+         2、ListView的Item的根目录必须是LinearLayout
+
+             3、记得addressadapter.notifyDataSetChanged();刷新adapter更新之后要调用
+
