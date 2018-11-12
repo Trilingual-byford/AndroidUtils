@@ -58,4 +58,19 @@
    // explicitly depend on RxJava's latest version for bug fixes and new features.
    // (see https://github.com/ReactiveX/RxJava/releases for latest 2.x.x version)
    implementation 'io.reactivex.rxjava2:rxjava:2.2.3'
+   
+   Room:
+   // Room components
+   implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
+   annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+   androidTestImplementation "android.arch.persistence.room:testing:$rootProject.roomVersion"
+   
+    ext {
+    roomVersion = '1.0.0'
+    archLifecycleVersion = '1.1.0'
+ }
+   Lifecycle:
+   // Lifecycle components
+   implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
+   annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
 }
